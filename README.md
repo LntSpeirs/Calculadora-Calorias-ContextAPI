@@ -1,6 +1,8 @@
 # Calorie-tracker
 
-Modificacion de un proyecto que ya tenia al que le añado contextAPI para practicar
+Modificacion de un proyecto que ya tenia al que le añado contextAPI para practicar.
+
+Ver ejemplo en netlify: [live demo](https://contador-calorias-con-contextapi.netlify.app/)
 
 - ContextAPI
 
