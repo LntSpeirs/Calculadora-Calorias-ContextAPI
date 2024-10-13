@@ -1,10 +1,12 @@
-import { createContext, Dispatch, ReactNode, useReducer } from "react";
+import { createContext, Dispatch, ReactNode, useMemo, useReducer } from "react";
 import {
   ActivityActions,
   activityReducer,
   ActivityState,
   initialState,
 } from "../reducers/activity-reducer";
+import { Activity } from "../types";
+import { categories } from "../data/categories";
 
 type ActivityProviderProps = {
   children: ReactNode;
@@ -13,6 +15,11 @@ type ActivityProviderProps = {
 type ActivityContextProps = {
   state: ActivityState;
   dispatch: Dispatch<ActivityActions>;
+  caloriesConsumed: number;
+  caloriesBurned: number;
+  netCalories: number;
+  isEmptyActivities: boolean;
+  categoryName: (category: Activity["category"]) => string[];
 };
 
 export const ActivityContext = createContext<ActivityContextProps>(
@@ -22,8 +29,58 @@ export const ActivityContext = createContext<ActivityContextProps>(
 export const ActivityProvider = ({ children }: ActivityProviderProps) => {
   const [state, dispatch] = useReducer(activityReducer, initialState);
 
+  //Contadores
+  const caloriesConsumed = useMemo(
+    () =>
+      state.activities.reduce(
+        (total, activity) =>
+          activity.category === 1 ? total + activity.calories : total,
+        0
+      ),
+    [state.activities]
+  );
+
+  const caloriesBurned = useMemo(
+    () =>
+      state.activities.reduce(
+        (total, activity) =>
+          activity.category === 2 ? total + activity.calories : total,
+        0
+      ),
+    [state.activities]
+  );
+
+  const netCalories = useMemo(
+    () => caloriesConsumed - caloriesBurned,
+    [state.activities]
+  );
+
+  const categoryName = useMemo(
+    () => (category: Activity["category"]) =>
+      categories.map((cat) => (cat.id === category ? cat.name : "")),
+    [state.activities]
+  );
+
+  /*Como activities pueden cambiar continuamente podemos usar useMemo en lugar del length directamente para aprovechar el cacheo de React para optimizar el rendimiento,
+  ya que el length se ejecuta en cada renderizado, lo que puede ser ligeramente menos eficiente si activities cambia frecuentemente.
+  */
+  const isEmptyActivities = useMemo(
+    () => state.activities.length === 0,
+    [state.activities]
+  );
+
   return (
-    <ActivityContext.Provider value={{ state, dispatch }}>
+    <ActivityContext.Provider
+      value={{
+        state,
+        dispatch,
+        caloriesConsumed,
+        caloriesBurned,
+        netCalories,
+        categoryName,
+        isEmptyActivities,
+      }}
+    >
       {children}
     </ActivityContext.Provider>
   );

@@ -9,4 +9,6 @@ export const useActivity = () => {
       "El hook useActivity debe ser usado dentro de un ActivityProvider"
     );
   }
+
+  return context;
 };

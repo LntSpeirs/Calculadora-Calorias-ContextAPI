@@ -1,15 +1,9 @@
-import { useState, ChangeEvent, FormEvent, Dispatch, useEffect } from "react";
+import { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import { categories } from "../data/categories";
 import { Activity } from "../types";
-import { ActivityActions, ActivityState } from "../reducers/activity-reducer";
-
-//Especificamos de que tipo seran las acciones del dispatch que me estoy pasando por props  (mi tipo personalizado)
-type FormProps = {
-  dispatch: Dispatch<ActivityActions>;
-  state: ActivityState;
-};
+import { useActivity } from "../hooks/useActivity";
 
 const initialState: Activity = {
   id: uuidv4(),
@@ -18,7 +12,9 @@ const initialState: Activity = {
   calories: 0,
 };
 
-const Form = ({ dispatch, state }: FormProps) => {
+const Form = () => {
+  const { state, dispatch } = useActivity();
+
   //COMO LOS 3 STATE DEPENDEN UNOS DE OTROS LOS PONEMOS EN UN OBJETO CON SU TIPO PERSONALIZADO
   const [activity, setActivity] = useState<Activity>(initialState);
 

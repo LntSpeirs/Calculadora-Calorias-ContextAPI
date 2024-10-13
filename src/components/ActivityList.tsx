@@ -1,31 +1,9 @@
-import { useMemo, Dispatch } from "react";
-import { categories } from "../data/categories";
 import { PencilSquareIcon, XCircleIcon } from "@heroicons/react/24/outline";
-/**
- * Especificar el tipo de lo que le voy a pasar por props, en este caso el array de actividades para renderizarlo
- */
-import { Activity } from "../types";
-import { ActivityActions } from "../reducers/activity-reducer";
+import { useActivity } from "../hooks/useActivity";
 
-type ActivityListProps = {
-  activities: Activity[];
-  dispatch: Dispatch<ActivityActions>;
-};
+const ActivityList = () => {
+  const { state, dispatch, categoryName, isEmptyActivities } = useActivity();
 
-const ActivityList = ({ activities, dispatch }: ActivityListProps) => {
-  const categoryName = useMemo(
-    () => (category: Activity["category"]) =>
-      categories.map((cat) => (cat.id === category ? cat.name : "")),
-    [activities]
-  );
-
-  /*Como activities pueden cambiar continuamente podemos usar useMemo en lugar del length directamente para aprovechar el cacheo de React para optimizar el rendimiento,
-  ya que el length se ejecuta en cada renderizado, lo que puede ser ligeramente menos eficiente si activities cambia frecuentemente.
-  */
-  const isEmptyActivities = useMemo(
-    () => activities.length === 0,
-    [activities]
-  );
   return (
     <>
       <h2 className="text-4xl font-bold text-slate-600 text-center">
@@ -39,7 +17,7 @@ const ActivityList = ({ activities, dispatch }: ActivityListProps) => {
         )
       }
 
-      {activities.map((activity) => (
+      {state.activities.map((activity) => (
         <div
           key={activity.id}
           className="px-5 py-10 bg-white mt-5 flex justify-between"
